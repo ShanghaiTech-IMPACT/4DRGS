@@ -192,31 +192,29 @@ figure {
 <script type="text/javascript" src="../js/hidebib.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,600,400italic,600italic,300,300italic' rel='stylesheet' type='text/css'>
     <head>
-        <title>Geometry-Aware Attenuation Learning for Sparse-View CBCT Reconstruction</title>
-        <meta property="og:description" content="Geometry-Aware Attenuation Learning for Sparse-View CBCT Reconstruction"/>
+        <title>4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images</title>
+        <meta property="og:description" content="4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images"/>
         <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:creator" content="@ArashVahdat">
-        <meta name="twitter:title" content="Geometry-Aware Attenuation Learning for Sparse-View CBCT Reconstruction">
-        <meta name="twitter:description" content="Geometry-Aware Attenuation Learning for Sparse-View CBCT Reconstruction">
+        <meta name="twitter:title" content="4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images">
+        <meta name="twitter:description" content="4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images">
         <meta name="twitter:image" content="">
     </head>
 
  <body>
 <div class="container">
     <div class="paper-title">
-      <h1>Geometry-Aware Attenuation Learning for Sparse-View CBCT Reconstruction</h1>
+      <h1>4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images</h1>
     </div>
 
     <div id="authors">
     	<center>
         <div class="author-row">
             <div class="col-4 text-center"><a href="https://zhentao-liu.github.io/">Zhentao Liu</a><sup>1</sup></div>
-            <div class="col-4 text-center"><a href="https://yuffish.github.io/">Yu Fang</a><sup>1</sup></div>
-            <div class="col-4 text-center"><a href="https://enigma-li.github.io/">Changjian Li</a><sup>4</sup></div>
-            <div class="col-4 text-center"><a href="http://hanwu.website/">Han Wu</a><sup>1</sup></div>
-            <div class="col-4 text-center"><a href="https://liuyuan-pal.github.io/">Yuan Liu</a><sup>5</sup></div>
-            <div class="col-3 text-center"><a href="https://idea.bme.shanghaitech.edu.cn/">Dingggang Shen</a><sup>1,2,3</sup></div>
+            <div class="col-4 text-center"><a href="https://ruyi-zha.github.io/">Ruyi Zha</a><sup>2</sup></div>
+            <div class="col-4 text-center">Huangxuan Zhao</a><sup>3</sup></div>
+            <div class="col-4 text-center"><a href="https://users.cecs.anu.edu.au/~hongdong/">Hongdong Li</a><sup>2</sup></div>
             <div class="col-3 text-center"><a href="https://shanghaitech-impact.github.io/">Zhiming Cui</a><sup>1</sup></div>
         </div> 
         <center>
@@ -228,16 +226,10 @@ figure {
                     <span style="font-size:20px"><sup>1</sup>School of Biomedical Engineering & State Key Laboratory of Advanced Medical Materials and Devices, ShanghaiTech University, Shanghai, China</span>
                 </div>
                 <div class="col-1 text-center">
-                    <span style="font-size:20px"><sup>2</sup>Shanghai United Imaging Intelligence Co., Ltd., Shanghai, China</span>
+                    <span style="font-size:20px"><sup>2</sup>The Australian National University, Canberra, Australia</span>
                 </div>
                 <div class="col-1 text-center">
-                    <span style="font-size:20px"><sup>3</sup>Shanghai Clinical Research and Trial Center, Shanghai, China</span>
-                </div>
-                <div class="col-1 text-center">
-                    <span style="font-size:20px"><sup>4</sup>School of Informatics, The University of Edinburgh, Edinburgh, UK</span>
-                </div>
-                <div class="col-1 text-center">
-                    <span style="font-size:20px"><sup>5</sup>Department of Computer Science, The University of Hong Kong, Hong Kong, China</span>
+                    <span style="font-size:20px"><sup>3</sup>School of Computer Science, Wuhan University, Wuhan, China</span>
                 </div>
                 </center>
                 </tr>
@@ -254,15 +246,11 @@ figure {
         <br>
         <div style="clear: both">
             <div class="paper-btn-parent">
-            <a class="paper-btn" href="https://ieeexplore.ieee.org/document/10705334">
-                <span class="material-icons"></span> 
-                 Paper
-            </a>
-            <a class="paper-btn" href="https://arxiv.org/abs/2303.14739">
+            <a class="paper-btn">
                 <span class="material-icons"></span> 
                  Arxiv
             </a>
-            <a class="paper-btn" href="https://github.com/ShanghaiTech-IMPACT/Geometry-Aware-Attenuation-Learning-for-Sparse-View-CBCT-Reconstruction/">
+            <a class="paper-btn" href="https://github.com/ShanghaiTech-IMPACT/4DRGS/">
                 <span class="material-icons"></span> 
                  Code
             </a>
@@ -272,28 +260,28 @@ figure {
     <section id="abstract"/>
         <h2>Abstract</h2>
         <hr>
-        <center><img width="100%" src="./image/DRR.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
+        <center><img width="100%" src="./image/overview.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
         <p class="caption">
-            CBCT scanning and reconstruction. In the CBCT scanning process, CBCT scanning (a) would generate a sequence of 2D X-ray projections (b). These projections are utilized to reconstruct 3D CBCT image (c).
+            Overview of DSA imaging and vessel reconstruction. (a) DSA images are generated by subtracting fill-run X-ray images from their mask-run counterparts. (b) We model vessels as a set of 4D radiative Gaussians. (c) The final 3D vessel volume is reconstructed via attenuation voxelization.
         </p><p class="caption">
         <div class="flex-row">
-            <p>Cone Beam Computed Tomography (CBCT) plays a vital role in clinical imaging. Traditional methods typically require hundreds of 2D X-ray projections to reconstruct a high-quality 3D CBCT image, leading to considerable radiation exposure. This has led to a growing interest in sparse-view CBCT reconstruction to reduce radiation doses. While recent advances, including deep learning and neural rendering algorithms, have made strides in this area, these methods either produce unsatisfactory results or suffer from time inefficiency of individual optimization. In this paper, we introduce a novel geometry-aware encoder-decoder framework to solve this problem. Our framework starts by encoding multi-view 2D features from various 2D X-ray projections with a 2D CNN encoder. Leveraging the geometry of CBCT scanning, it then back-projects the multi-view 2D features into the 3D space to formulate a comprehensive volumetric feature map, followed by a 3D CNN decoder to recover 3D CBCT image. Importantly, our approach respects the geometric relationship between 3D CBCT image and its 2D X-ray projections during feature back projection stage, and enjoys the prior knowledge learned from the data population. This ensures its adaptability in dealing with extremely sparse view inputs without individual training, such as scenarios with only 5 or 10 X-ray projections. Extensive evaluations on two simulated datasets and one real-world dataset demonstrate exceptional reconstruction quality and time efficiency of our method.<p>
+            <p>Reconstructing 3D vessel structures from sparse-view dynamic digital subtraction angiography (DSA) images enables accurate medical assessment while reducing radiation exposure. Existing methods often produce suboptimal results or require excessive computation time. In this work, we propose 4D radiative Gaussian splatting (4DRGS) to achieve high-quality reconstruction efficiently. In detail, we represent the vessels with 4D radiative Gaussian kernels. Each kernel has time-invariant geometry parameters, including position, rotation, and scale, to model static vessel structures. The time-dependent central attenuation of each kernel is predicted from a compact neural network to capture the temporal varying response of contrast agents. We splat these Gaussian kernels to synthesize DSA images via X-ray rasterization and optimize the model with real captured ones. The final 3D vessel volume is voxelized from the well-trained kernels. Moreover, we introduce accumulated attenuation pruning and bounded scaling activation to improve reconstruction quality. Extensive experiments on real-world patient data demonstrate that 4DRGS achieves impressive results in 5 minutes training, which is 32x faster than the state-of-the-art method. This underscores the potential of 4DRGS for real-world clinics.<p>
         </div>
     </section>
 
     <section id="Methodology"/>
         <h2>Methodology</h2>
         <hr>
-        <center><img width="100%" src="./image/CBCT_recon_TMI.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
+        <center><img width="100%" src="./image/pipeline.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
         <p class="caption">
-            Overview of our proposed method. A 2D CNN encoder first extracts feature representations from multi-view X-ray projections. Then, we build a 3D feature map by feature back projection and adaptive feature fusing. Finally, this 3D feature map is fed into a 3D CNN decoder to produce the final CBCT image.
+            The overall pipeline of 4DRGS. We model vessels as a set of 4D radiative Gaussian kernels and optimize them with image losses. 3D vessel volume is reconstructed via attenuation voxelization.
         </p><p class="caption">
         <div class="flex-row">
-            <p>Sparse-view CBCT reconstruction is a highly ill-posed problem with twofold challenges: (1) How to bridge the dimension gap between multi-view 2D X-ray projections and the CBCT image; (2) How to solve information insufficiency introduced by extremely sparse-view input. In this study, we introduce a geometry-aware encoder-decoder framework to solve this task efficiently. It seamlessly integrates the multi-view consistency of neural rendering and the generalization ability of deep learning, effectively addressing the challenges mentioned above. Specifically, we first adopt a 2D convolutional neural network (CNN) encoder to extract multi-view 2D features from different X-ray projections. Then, in aligning with the geometry of CBCT scanning, we back-project multi-view 2D features into 3D space, which properly bridges the dimension gap with multi-view consistency. Particularly, as different views offer varying degrees of information, an adaptive feature fusion strategy is further introduced to aggregate these multi-view features. Consequently, a 3D volumetric feature is constructed and then decoded into 3D CBCT image with a 3D CNN decoder. Our framework's inherent geometry awareness ensures accurate information retrieval from multi-view X-ray projections. Moreover, by capturing prior knowledge from populations in extensive datasets, our method can generalize well across different patients without individual optimization, even with extremely sparse input views, such as 5 or 10 views. We have validated our effectiveness on two simulated datasets (dental and spine) and one real-world dataset (walnut). You may refer to the code link for the details of our datasets.<p>
+            <p>4DRGS.<p>
         </div>
     </section>
 
-    <section id="results"/>
+<!--     <section id="results"/>
         <h2>Results</h2>
         <hr>
         <center><img width="100%" src="./image/results_fig1.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
@@ -324,4 +312,4 @@ figure {
           doi={10.1109/TMI.2024.3473970}
       }
         </code></pre>
-    </section>
+    </section> -->
