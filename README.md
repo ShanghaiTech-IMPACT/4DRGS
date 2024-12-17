@@ -10,4 +10,4 @@ We will release our code and some test cases once our paper accepted. To be cont
 
 # Related Links
 - NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705)
-- The first 3DGS-based framework for CT reconstruction: [R^2-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
+- The first 3DGS-based framework for CT reconstruction: [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
