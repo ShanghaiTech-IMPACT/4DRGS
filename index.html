@@ -347,30 +347,33 @@ figure {
         </center>
         <p class="caption">
             Training progress visualization on Gaussian kernel positions. The model is trained for 30k iterations. Adaptive control runs from 600 to 15k iterations, adjusting every 200 iterations.
+            Iteration=0 represents FDK initialization.
         </p><p class="caption">
     </section>
 
-<!--     <section id="results"/>
+    <section id="results"/>
         <h2>Results</h2>
         <hr>
-        <center><img width="100%" src="./image/results_fig1.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
+        
+        <center><img width="100%" src="./image/tabresults.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
         <p class="caption">
-            Qualitative comparison on case #10 from dental dataset (axial slice). Window: [-1000, 2000] HU. For more results, please refer to our paper.
+            Quantitative results on 3D vessel reconstruction and 2D DSA image synthesis. The best performance is shown in bold, while the second best is underlined.
+        </p><p class="caption">
+        <center><img width="100%" src="./image/3dresults.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
+        <p class="caption">
+            3D vessel reconstruction of different methods with CD(mm)/HD(mm) values shown at the top right of each image.
         </p><p class="caption">
             
-        <center><img width="100%" src="./image/results_fig.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
+        <center><img width="100%" src="./image/2dresults" style="margin-top: 20px; margin-bottom: 3px;"></center>
         <p class="caption">
-            Qualitative comparison with current two SOTA methods SNAF and DIF-Net on case #9 from dental dataset. From top to bottom: axial, coronal, and sagittal slices. Window: [-1000, 2000] HU. For more results, please refer to our paper.
+            2D DSA image synthesis of different methods at test frames.
+            PSNR(dB)/SSIM values averaged over the test set are shown at the top right of each image.
         </p><p class="caption">
 
-        <center><img width="100%" src="./image/results_tab.png" style="margin-top: 20px; margin-bottom: 3px;"></center>
-        <p class="caption">
-            Quantitative comparison on case #9 from dental dataset. The best performance is shown in bold. For more results, please refer to our paper.
-        </p><p class="caption">
     </section>
 
     
-    <section id="bibtex">
+<!--     <section id="bibtex">
         <h2>Citation</h2>
         <hr>
         <pre><code>@ARTICLE{SVCT,
