@@ -277,7 +277,19 @@ figure {
             The overall pipeline of 4DRGS. (a) We model vessels as a set of 4D radiative Gaussian kernels and (b) optimize them with image losses. (c) 3D vessel volume is reconstructed via attenuation voxelization.
         </p><p class="caption">
         <div class="flex-row">
-            <p>4DRGS.<p>
+            <p>A key observation is that vessels maintain static structures during scanning process, while their attenuation varies over time due to the contrast agent flow. 
+                Therefore, we represent vessels as a set of 4D radiative Gaussian kernels, where each kernel acts as a local Gaussian-shaped time-varying attenuation distribution. 
+                The static vessel structures are modeled with time-invariant geometry parameters, including position, rotation, and scale. 
+                To mimic the temporal attenuation changes, we introduce a compact neural network dubbed dynamic neural attenuation field (DNAF). 
+                It takes kernel position and timestamp as input, and predicts the central attenuation. 
+                We splat these Gaussian kernels to synthesize DSA images via X-ray rasterization and optimize them by minimizing the disparities with real captured images. 
+                After training, 3D vessel volume is reconstructed via attenuation voxelization. 
+                Two innovations are further introduced to enhance reconstruction quality: 
+                (1) accumulated attenuation pruning to remove non-vessel kernels and (2) bounded scaling activation to reduce needle artifacts. 
+                Experiments on real-world data demonstrate our method's effectiveness for both 3D vessel reconstruction and 2D DSA image synthesis.
+                Notably, 4DRGS achieves impressive results in 5 minutes and converges in 13 minutes, 
+                offering a speedup of 32x and 12x compared to the state-of-the-art (SOTA) method VPAL.
+            <p>
         </div>
     </section>
 
