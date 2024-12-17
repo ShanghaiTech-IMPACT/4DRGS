@@ -3,7 +3,9 @@
 
 ## [Arxiv] | [Project Page](https://shanghaitech-impact.github.io/4DRGS/)
 
-We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D vessel reconstruction from sparse-view dynamic DSA images. Our method achieves impressive results within minutes, highlighting its potential for clinical applications.
+We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D vessel reconstruction from sparse-view dynamic DSA images. Our method achieves impressive results with sparse input (30 views) in minutes, highlighting its potential to support medical assessment while reducing radiation exposure.
+
+![](./image/overview.png)
 
 # Releasing
 We will release our code and some test cases once our paper accepted. To be continue. If you have any question, just reach out to the author: liuzht2022@shanghaitech.edu.cn
