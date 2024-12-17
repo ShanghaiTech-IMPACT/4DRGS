@@ -7,7 +7,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 
 ![](./image/overview.png)
 
-![](./image/pcd_render_video_5fps_0_5k_30fps_5k_30k)
+![pcdrender]
 
 # Introduction
 
