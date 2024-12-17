@@ -16,4 +16,6 @@ We will release our code and some test cases once our paper accepted. To be cont
 - The first 3DGS-based framework for DSA image synthesis: [TOGS](https://github.com/hustvl/TOGS)
 - NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705)
 
+Thanks for all these great works.
+
 # Citation
