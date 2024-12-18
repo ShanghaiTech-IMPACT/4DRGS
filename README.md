@@ -19,3 +19,11 @@ We will release our code and some test cases once our paper accepted. To be cont
 Thanks for all these great works.
 
 # Citation
+If you think our work and repo are useful, you may cite our paper.
+
+    @article{4DRGS,
+      title={4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images},
+      author={Liu, Zhentao and Zha, Ruyi and Zhao, Huangxuan and Li, Hongdong and Cui, Zhiming},
+      journal={arXiv preprint arXiv:2412.12919},
+      year={2024}
+    }
