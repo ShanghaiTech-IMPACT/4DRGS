@@ -15,7 +15,7 @@ We will release our code and some test cases once our paper accepted. To be cont
 - Traditional FDK reconstruction is implemented based on [TIGRE-toolbox](https://github.com/CERN/TIGRE)
 - The first 3DGS-based framework for CT reconstruction: [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
 - The first 3DGS-based framework for DSA image synthesis: [TOGS](https://github.com/hustvl/TOGS)
-- NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705)
+- NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705), [TiAVox](https://arxiv.org/abs/2309.02318)
 
 Thanks for all these great works.
 
