@@ -8,7 +8,15 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 
 ![](./assest/overview.png)
 
-# Releasing
+## Setup
+First clone this repo. And then set up an environment and install packages.
+
+    git clone https://github.com/ShanghaiTech-IMPACT/4DRGS.git
+    cd 4DRGS
+    
+    
+
+# Training
 We will release our code and some test cases once our paper accepted. To be continue. If you have any question, just reach out to the author: liuzht2022@shanghaitech.edu.cn
 
 # Related Links
