@@ -8,16 +8,35 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 
 ![](./assest/overview.png)
 
-## Setup
-First clone this repo. And then set up an environment and install packages.
+# Setup
+First clone this repo. And then set up an environment and install packages. We use single RTX3090 for experiments.
 
     git clone https://github.com/ShanghaiTech-IMPACT/4DRGS.git
     cd 4DRGS
+    conda env create -f environment.yml
+    conda activate 4DRGS
+    wget https://github.com/CERN/TIGRE/archive/refs/tags/v2.4.zip
+    unzip v2.4.zip
+    pip install TIGRE-2.4/Python --no-build-isolation
     
-    
+# Data-Preparation
+We provide `case2` in our paper, and you can find it in this [data link](https://drive.google.com/drive/folders/1vNnNfgAFzntEOZIhjm3PRMGh-1Vf2GeR?usp=sharing), including fill run, mask run, reference reconstructed volume from DSA scanner, reference mesh, and geometry description json file.
+You may use it for quick validation.
 
 # Training
-We will release our code and some test cases once our paper accepted. To be continue. If you have any question, just reach out to the author: liuzht2022@shanghaitech.edu.cn
+After downloading the data, you could run the following command to train your model.
+
+    python train.py -m=output/case2_30k -D=./dataset/case2 --Nviews=30
+
+In this way, you would train a model with 30 input views on case2 for 30k iteration, finished in tens of minutes. You can also train a fast version in several minutes as follows.
+
+    python train.py -m=output/case2_10k -D=./dataset/case2 --Nviews=30 --iteration=10000 --ADC_until_iter=5000
+
+# Testing
+Use the following commands to test your trained model
+
+    python test.py -m=output/case2_30k -D=./dataset/case2 --Nviews=30 --render_2d --VQR
+    python test.py -m=output/case2_10k -D=./dataset/case2 --Nviews=30 --iteration=10000 --render_2d --VQR
 
 # Related Links
 - Traditional FDK reconstruction is implemented based on [TIGRE-toolbox](https://github.com/CERN/TIGRE)
