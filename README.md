@@ -33,7 +33,7 @@ In this way, you would train a model with 30 input views on case2 for 30k iterat
     python train.py -m=output/case2_10k -D=./dataset/case2 --Nviews=30 --iteration=10000 --ADC_until_iter=5000
 
 ## Testing
-Use the following commands to test your trained model
+Use the following commands to test your trained model.
 
     python test.py -m=output/case2_30k -D=./dataset/case2 --Nviews=30 --render_2d --VQR
     python test.py -m=output/case2_10k -D=./dataset/case2 --Nviews=30 --iteration=10000 --render_2d --VQR
@@ -44,7 +44,7 @@ Use the following commands to test your trained model
 - The first 3DGS-based framework for DSA image synthesis: [TOGS](https://github.com/hustvl/TOGS)
 - NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705), [TiAVox](https://arxiv.org/abs/2309.02318)
 
-Our method is developed on the amazing open-source code: [3DGS](https://github.com/graphdeco-inria/gaussian-splatting) and [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
+Our method is developed based on the amazing open-source code: [3DGS](https://github.com/graphdeco-inria/gaussian-splatting) and [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian).
 
 Thanks for all these great works.
 
