@@ -16,8 +16,8 @@ First clone this repo. And then set up an environment and install packages. We u
     conda env create -f environment.yml
     conda activate 4DRGS
     wget https://github.com/CERN/TIGRE/archive/refs/tags/v2.4.zip
-    unzip v2.4.zip
-    pip install TIGRE-2.4/Python --no-build-isolation
+    unzip v3.0.zip
+    pip install TIGRE-3.0/Python --no-build-isolation
     
 ## Data-Preparation
 We provide `case2` in our paper, and you can find it in this [data link](https://drive.google.com/drive/folders/1vNnNfgAFzntEOZIhjm3PRMGh-1Vf2GeR?usp=sharing), including fill run, mask run, reference reconstructed volume from DSA scanner, reference mesh, and geometry description json file.
