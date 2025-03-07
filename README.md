@@ -15,7 +15,7 @@ First clone this repo. And then set up an environment and install packages. We u
     cd 4DRGS
     conda env create -f environment.yml
     conda activate 4DRGS
-    wget https://github.com/CERN/TIGRE/archive/refs/tags/v2.4.zip
+    wget https://github.com/CERN/TIGRE/archive/refs/tags/v3.0.zip
     unzip v3.0.zip
     pip install TIGRE-3.0/Python --no-build-isolation
     
@@ -43,6 +43,7 @@ Use the following commands to test your trained model.
 - The first 3DGS-based framework for CT reconstruction: [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
 - The first 3DGS-based framework for DSA image synthesis: [TOGS](https://github.com/hustvl/TOGS)
 - NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705), [TiAVox](https://arxiv.org/abs/2309.02318)
+- It is recommended to view medical data in nii format with [ITK-SNAP](http://www.itksnap.org/pmwiki/pmwiki.php/) or [3D Slicer](https://www.slicer.org/).
 
 Our method is developed based on the amazing open-source code: [3DGS](https://github.com/graphdeco-inria/gaussian-splatting) and [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian).
 
