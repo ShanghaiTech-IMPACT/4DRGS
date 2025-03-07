@@ -8,7 +8,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 
 ![](./assest/overview.png)
 
-# Setup
+## Setup
 First clone this repo. And then set up an environment and install packages. We use single RTX3090 for experiments.
 
     git clone https://github.com/ShanghaiTech-IMPACT/4DRGS.git
@@ -19,7 +19,7 @@ First clone this repo. And then set up an environment and install packages. We u
     unzip v2.4.zip
     pip install TIGRE-2.4/Python --no-build-isolation
     
-# Data-Preparation
+## Data-Preparation
 We provide `case2` in our paper, and you can find it in this [data link](https://drive.google.com/drive/folders/1vNnNfgAFzntEOZIhjm3PRMGh-1Vf2GeR?usp=sharing), including fill run, mask run, reference reconstructed volume from DSA scanner, reference mesh, and geometry description json file.
 You may use it for quick validation.
 
@@ -32,21 +32,26 @@ In this way, you would train a model with 30 input views on case2 for 30k iterat
 
     python train.py -m=output/case2_10k -D=./dataset/case2 --Nviews=30 --iteration=10000 --ADC_until_iter=5000
 
-# Testing
+## Testing
 Use the following commands to test your trained model
 
     python test.py -m=output/case2_30k -D=./dataset/case2 --Nviews=30 --render_2d --VQR
     python test.py -m=output/case2_10k -D=./dataset/case2 --Nviews=30 --iteration=10000 --render_2d --VQR
 
-# Related Links
+## Related Links
 - Traditional FDK reconstruction is implemented based on [TIGRE-toolbox](https://github.com/CERN/TIGRE)
 - The first 3DGS-based framework for CT reconstruction: [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
 - The first 3DGS-based framework for DSA image synthesis: [TOGS](https://github.com/hustvl/TOGS)
 - NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705), [TiAVox](https://arxiv.org/abs/2309.02318)
 
+Our method is developed on the amazing open-source code: [3DGS](https://github.com/graphdeco-inria/gaussian-splatting) and [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
+
 Thanks for all these great works.
 
-# Citation
+## Contact
+There may be some errors during code cleaning. If you have any questions on our code or our paper, please feel free to contact with the author: liuzht2022@shanghaitech.edu.cn, or raise an issue in this repo. We shall continue to update this repo. TBC.
+
+## Citation
 If you think our work and repo are useful, you may cite our paper.
 
     @article{4DRGS,
