@@ -1,0 +1,36 @@
+name: dsa_3dgs
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+  - nvidia
+dependencies:
+  - cudatoolkit=11.6
+  - plyfile
+  - python=3.9
+  - pip=22.3.1
+  - pytorch=1.12.1
+  - torchvision=0.13.1
+  - mkl==2024.0
+  - numpy==1.24.1
+  - tqdm
+  - tensorboard
+  - tensorboardX
+  - pyyaml
+  - pip:
+    - opencv-python
+    - matplotlib
+    - pydicom
+    - tifffile
+    - imagecodecs
+    - pyvista
+    - scikit-image
+    - pyhocon
+    - SimpleITK
+    - PyMCubes
+    - pymeshlab
+    - Cython==0.29.36
+    - open3d==0.18.0
+    - git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
+    - -e submodules/simple-knn
+    - -e submodules/diff-Xray-gaussian-rasterization-voxelization
