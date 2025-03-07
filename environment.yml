@@ -1,4 +1,4 @@
-name: dsa_3dgs
+name: 4DRGS
 channels:
   - pytorch
   - conda-forge
