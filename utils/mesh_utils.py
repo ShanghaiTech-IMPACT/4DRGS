@@ -2,7 +2,6 @@ import numpy as np
 import open3d as o3d
 from scipy import ndimage
 from skimage import measure
-import point_cloud_utils as pcu
 import copy
 import mcubes
 import pymeshlab
@@ -71,19 +70,3 @@ def mesh_distance(mesh_1, mesh_2, spacing, type='chamfer'):
         hd_95_2 = np.percentile(dist_2, 95)
         hd_95 = max(hd_95_1, hd_95_2)
         return hd_95
-
-def mesh_distance_pcu(mesh1, mesh2, spacing, type='chamfer'):
-    mesh_1 = copy.deepcopy(mesh1)
-    mesh_2 = copy.deepcopy(mesh2)
-
-    vertices_1 = np.asarray(mesh_1.vertices)
-    vertices_1 = vertices_1 * spacing
-    vertices_2 = np.asarray(mesh_2.vertices)
-    vertices_2 = vertices_2 * spacing
-
-    if type == 'chamfer':
-        cd = pcu.chamfer_distance(vertices_1, vertices_2)
-        return cd
-    if type == 'hausdorff':
-        hd = pcu.hausdorff_distance(vertices_1, vertices_2)
-        return hd
