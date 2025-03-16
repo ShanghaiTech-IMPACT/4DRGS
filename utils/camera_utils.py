@@ -18,24 +18,3 @@ def cameraList_from_camInfos(cam_infos, args=None):
         camera_list.append(loadCam(args, id, c))
 
     return camera_list
-
-def camera_to_JSON(id, camera : Camera):
-    Rt = np.zeros((4, 4))
-    Rt[:3, :3] = camera.R
-    Rt[:3, 3] = camera.T
-    Rt[3, 3] = 1.0
-
-    C2W = np.linalg.inv(Rt)
-    pos = C2W[:3, 3]  # camera center
-    rot = C2W[:3, :3]
-    serializable_array_2d = [x.tolist() for x in rot]
-    camera_entry = {
-        'id' : id,
-        'img_name' : camera.image_name,
-        'width' : camera.width,
-        'height' : camera.height,
-        'position': pos.tolist(),
-        'rotation': serializable_array_2d,
-        'sid': camera.sid
-    }
-    return camera_entry
