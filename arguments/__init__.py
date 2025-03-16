@@ -46,7 +46,7 @@ class ModelParams(ParamGroup):
         self.use_scale_bound = True # whether use scale bound
         self.scale_min = 0.1  #  scale min voxels
         self.scale_max = 10   #  scale max voxels
-        self.thres_percent_fdk = 0.016 # 0.15 # thres percent for fdk initial  for CBCT 0.1  for DSA 0.12
+        self.thres_percent_fdk = 0.0025 # 0.15 # thres percent for fdk initial  for CBCT 0.1  for DSA 0.12
         self.thres_percent_query = 0.005 # 0.04 # thres percent for voxel query initial
         self.resample_mode = 'fdk'  # 'fdk' or 'query'
         self.train_views = 0
