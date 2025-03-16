@@ -118,32 +118,6 @@ def readCameras(camera_file, datapath):
 
     return cam_infos, recon_args
 
-def create_camera_list(params, angle_list):
-    # directly used for rendering
-
-    sad = params['sad']
-    sid = params['sid']
-    width, height = params['proj_resolution']
-    FovX, FovY = params['FovX'], params['FovY']
-    sx, sy = params['sx'], params['sy']
-    near, far = params['near'], params['far']
-    
-    cam_infos = []
-    blank_image = np.zeros((1, height, width))  ## no available image
-    for idx, PrimaryAngle in enumerate(tqdm(angle_list, desc='camera creating')):
-        uid = idx
-        timestamp = -1   ## no available timestamp
-        extr = get_extrinsic(PrimaryAngle, 0, sad)
-        R = extr[:3, :3]
-        T = extr[:3, 3]
-        image_name = str(idx).zfill(4)
-        cam_info = CameraInfo(uid=uid, timestamp=timestamp, R=R, T=T, PrimaryAngle=PrimaryAngle, SecondaryAngle=0, sad=sad, sid=sid, FovY=FovY, FovX=FovX, sx=sx, sy=sy,
-                              near=near, far=far, image=blank_image, image_name=image_name, width=width, height=height)
-        cam_infos.append(cam_info)
-    cam_list = cameraList_from_camInfos(cam_infos)
-
-    return cam_list
-
 def get_indice(N_views, train_views):
     all_indice = np.arange(N_views)
     train_indice = np.arange(0, N_views, N_views/train_views).astype(int)   # note that train views could not be zero
@@ -152,30 +126,6 @@ def get_indice(N_views, train_views):
     # train_indice = np.linspace(0, Nviews-1, train_views).astype(int)
     eval_indice = np.delete(all_indice, train_indice).astype(int)
     return train_indice, eval_indice, all_indice
-
-def getNerfppNorm(cam_info):
-    def get_center_and_diag(cam_centers):
-        cam_centers = np.hstack(cam_centers)
-        avg_cam_center = np.mean(cam_centers, axis=1, keepdims=True)
-        center = avg_cam_center
-        dist = np.linalg.norm(cam_centers - center, axis=0, keepdims=True)
-        diagonal = np.max(dist)
-        return center.flatten(), diagonal
-
-    cam_centers = []
-
-    for cam in cam_info:
-        W2C = getWorld2View(cam.R, cam.T)
-        C2W = np.linalg.inv(W2C)
-        cam_centers.append(C2W[:3, 3:4])
-    
-    center, diagonal = get_center_and_diag(cam_centers)
-    radius = diagonal * 1.1
-
-    translate = -center
-
-    return {"translate": translate, "radius": radius}
-
 
 def vol_initializor(recon_vol, recon_args, init_args, type='fdk'):
 
