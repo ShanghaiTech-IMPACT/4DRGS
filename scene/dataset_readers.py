@@ -133,10 +133,7 @@ def vol_initializor(recon_vol, recon_args, init_args, type='fdk'):
  
     M1 = init_args['M1']
     M2 = init_args['M2']
-    if type == 'fdk':
-        thres_percent = init_args['thres_percent_fdk']
-    elif type == 'query':
-        thres_percent = init_args['thres_percent_query']
+    thres_percent = init_args['thres_percent_fdk']
     
     # img_max = recon_vol.max()
     # thres = img_max * thres_percent
