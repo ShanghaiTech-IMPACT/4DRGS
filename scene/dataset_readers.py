@@ -263,7 +263,7 @@ def storeply(path, pcd):
     ply_data.write(path)
 
 
-def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter, resampled):
+def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter):
 
     camera_file = os.path.join(datapath, 'transforms.json')
 
@@ -277,22 +277,18 @@ def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter, resamp
     train_cam_infos = [c for idx, c in enumerate(cam_infos) if idx in train_indice]
     test_cam_infos = [c for idx, c in enumerate(cam_infos) if idx in eval_indice]
 
-    if not loaded_iter:
-        if resampled:
-            print('Resampled initialization')   
-            pcd = None
-        else:    
-            if init_args['fdk_initial']:
-                print('FDK initialization')
-                fdk_file = os.path.join(outpath, 'fdk_reocn.nii.gz')
-                CT_reconstructor = tigre_ct(train_cam_infos, recon_args)
-                FDK_recon = CT_reconstructor.fdk(CT_reconstructor.projs, CT_reconstructor.PrimaryAngles) 
-                FDK_recon = np.clip(FDK_recon, a_min=0, a_max=FDK_recon.max())
-                pcd = vol_initializor(FDK_recon, recon_args, init_args, type='fdk')
-                sitk.WriteImage(sitk.GetImageFromArray(FDK_recon.transpose(2, 1, 0)), fdk_file)   # [H, W, D] ---> [D, H, W]
-            else:
-                print('Random initialization')
-                pcd = random_initializor(recon_args, init_args)
+    if not loaded_iter:  
+        if init_args['fdk_initial']:
+            print('FDK initialization')
+            fdk_file = os.path.join(outpath, 'fdk_reocn.nii.gz')
+            CT_reconstructor = tigre_ct(train_cam_infos, recon_args)
+            FDK_recon = CT_reconstructor.fdk(CT_reconstructor.projs, CT_reconstructor.PrimaryAngles) 
+            FDK_recon = np.clip(FDK_recon, a_min=0, a_max=FDK_recon.max())
+            pcd = vol_initializor(FDK_recon, recon_args, init_args, type='fdk')
+            sitk.WriteImage(sitk.GetImageFromArray(FDK_recon.transpose(2, 1, 0)), fdk_file)   # [H, W, D] ---> [D, H, W]
+        else:
+            print('Random initialization')
+            pcd = random_initializor(recon_args, init_args)
     else:
         pcd = None
     
