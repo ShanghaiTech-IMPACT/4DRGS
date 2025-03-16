@@ -410,7 +410,7 @@ class GaussianModel:
 
         return d_clone, d_split, split_prune_mask
 
-    def prune(self, extent, split_prune_mask, random_prune, avgopacity_prune, opacity_prune, dummy_opacity, 
+    def prune(self, split_prune_mask, random_prune, avgopacity_prune, opacity_prune, dummy_opacity, 
               max_screen_size, recon_args, iteration):
        
         prune_mask = self.exclude_outbbx(self.get_xyz, recon_args)
