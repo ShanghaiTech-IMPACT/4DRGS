@@ -22,7 +22,7 @@ class Scene:
 
         if load_iteration:
             if load_iteration == -1:
-                self.loaded_iter = searchForMaxIteration(os.path.join(self.model_path, f"point_cloud"))  # 自动找最大的iteration
+                self.loaded_iter = searchForMaxIteration(os.path.join(self.model_path, f"point_cloud"))
             else:
                 self.loaded_iter = load_iteration
             print("Loading trained model at iteration {}".format(self.loaded_iter))
