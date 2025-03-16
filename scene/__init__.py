@@ -13,10 +13,8 @@ class Scene:
 
     gaussians : GaussianModel
 
-    def __init__(self, args : ModelParams, gaussians : GaussianModel, scale_bound=None, resampled_pcds=None, \
-                 load_iteration=None, shuffle=True):
+    def __init__(self, args : ModelParams, gaussians : GaussianModel, scale_bound=None, resampled_pcds=None, load_iteration=None, shuffle=True):
 
-        self.use_resampling = resampled_pcds is not None
         self.model_path = args.model_path
         self.loaded_iter = None
         self.gaussians = gaussians
@@ -38,16 +36,14 @@ class Scene:
                      'thres_percent_fdk': args.thres_percent_fdk}
         
         self.init_args = init_args
-        scene_info = readSceneInfo(args.source_path, args.model_path, args.train_views, init_args, self.loaded_iter, self.use_resampling)
+        scene_info = readSceneInfo(args.source_path, args.model_path, args.train_views, init_args, self.loaded_iter)
         self.recon_args = scene_info.recon_args
         self.train_indice = scene_info.train_indice
         self.eval_indice = scene_info.eval_indice
         self.all_indice = scene_info.all_indice
 
         ply_path = os.path.join(self.model_path, f"input.ply")
-        if self.use_resampling:
-            storeply(ply_path, resampled_pcds)
-        elif scene_info.point_cloud is not None:    
+        if scene_info.point_cloud is not None:    
             storeply(ply_path, scene_info.point_cloud)
 
         if shuffle:
@@ -78,10 +74,7 @@ class Scene:
                                                             "iteration_" + str(self.loaded_iter),
                                                             "field.pth"))
         else:
-            if self.use_resampling:
-                self.gaussians.create_from_pcd(resampled_pcds, self.cameras_extent)
-            else:
-                self.gaussians.create_from_pcd(scene_info.point_cloud, self.cameras_extent)
+            self.gaussians.create_from_pcd(scene_info.point_cloud, self.cameras_extent)
 
 
     def save(self, iteration):
