@@ -26,17 +26,17 @@ You may use it for quick validation.
 # Training
 After downloading the data, you could run the following command to train your model.
 
-    python train.py -m=output/case2_30k -s=./dataset/case2 --Nviews=30
+    python train.py -m=output/case2_30v_30k -s=./dataset/case2 --Nviews=30
 
 In this way, you would train a model with 30 input views on case2 for 30k iteration, finished in tens of minutes. You can also train a fast version in several minutes as follows.
 
-    python train.py -m=output/case2_10k -s=./dataset/case2 --Nviews=30 --iteration=10000 --ADC_until_iter=5000
+    python train.py -m=output/case2_30v_10k -s=./dataset/case2 --Nviews=30 --iteration=10000 --ADC_until_iter=5000
 
 ## Testing
 Use the following commands to test your trained model. It would conduct multi-view rendering, fix-view rendering, and 3D vessel reconstruction.
 
-    python test.py -m=output/case2_30k -s=./dataset/case2 --Nviews=30 --render_2d --render_fixview --VQR
-    python test.py -m=output/case2_10k -s=./dataset/case2 --Nviews=30 --iteration=10000 --render_2d --render_fixview --VQR
+    python test.py -m=output/case2_30v_30k -s=./dataset/case2 --Nviews=30 --render_2d --render_fixview --VQR
+    python test.py -m=output/case2_30v_10k -s=./dataset/case2 --Nviews=30 --iteration=10000 --render_2d --render_fixview --VQR
 
 ## Related Links
 - Traditional FDK reconstruction is implemented based on [TIGRE-toolbox](https://github.com/CERN/TIGRE)
