@@ -109,7 +109,7 @@ def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, savi
 
                     if iteration > densify_from_iter and iteration % opt.densification_interval == 0:
                         d_clone, d_split, split_prune_mask = gaussians.densify(scene.scene_spacing, iteration)
-                        prune_num_record = gaussians.prune(scene.scene_spacing, split_prune_mask, opt.random_prune, opt.avgopacity_prune, opt.opacity_prune, dummy_opacity,
+                        prune_num_record = gaussians.prune(split_prune_mask, opt.random_prune, opt.avgopacity_prune, opt.opacity_prune, dummy_opacity,
                                                             opt.max_screen_size, scene.recon_args, iteration)
                         scene.gaussians.densification_postfix(d_clone)
                         scene.gaussians.densification_postfix(d_split)
