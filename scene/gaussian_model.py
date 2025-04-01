@@ -414,7 +414,8 @@ class GaussianModel:
               max_screen_size, recon_args, iteration):
        
         prune_mask = self.exclude_outbbx(self.get_xyz, recon_args)
-        prune_mask = torch.logical_or(prune_mask, split_prune_mask)  # split densify 产生的点也必须被剔除
+        if split_prune_mask is not None:
+            prune_mask = torch.logical_or(prune_mask, split_prune_mask)  # split densify 产生的点也必须被剔除
 
         prune_num_record = {}
         if random_prune:  #适用于动态场景 仅对血管外围点进行剔除 但是会造成噪声
