@@ -225,7 +225,7 @@ def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter):
     if not loaded_iter:  
         if init_args['fdk_initial']:
             print('FDK initialization')
-            fdk_file = os.path.join(outpath, 'fdk_reocn.nii.gz')
+            fdk_file = os.path.join(outpath, 'fdk_recon.nii.gz')
             CT_reconstructor = tigre_ct(train_cam_infos, recon_args)
             FDK_recon = CT_reconstructor.fdk(CT_reconstructor.projs, CT_reconstructor.PrimaryAngles) 
             FDK_recon = np.clip(FDK_recon, a_min=0, a_max=FDK_recon.max())
