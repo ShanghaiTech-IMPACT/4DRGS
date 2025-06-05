@@ -5,7 +5,6 @@ from skimage import measure
 import copy
 import mcubes
 import pymeshlab
-import open3d as o3d
 
 def mesh_extraction(vol_pred, thres, mesh_pred_path):
     verts, faces = mcubes.marching_cubes(vol_pred, thres)
