@@ -13,11 +13,20 @@ First clone this repo. And then set up an environment and install packages. We u
 
     git clone https://github.com/ShanghaiTech-IMPACT/4DRGS.git
     cd 4DRGS
-    conda env create -f environment.yml
+    conda create -n 4DRGS python=3.8
     conda activate 4DRGS
+    pip install torch==2.1.2+cu118 torchvision==0.16.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+    pip install -r requirements.txt
     git clone https://github.com/CERN/TIGRE.git
     cd TIGRE
     pip install .
+    cd ..
+    git clone --recursive https://github.com/nvlabs/tiny-cuda-nn
+    cd tiny-cuda-nn/bindings/torch
+    python setup.py install
+    cd ../../..
+    pip install submodules/diff-Xray-gaussian-rasterization-voxelization
+    pip install submodules/simple-knn
     
 ## Data-Preparation
 We provide `case2` in our paper, and you can find it in this [data link](https://drive.google.com/drive/folders/1vNnNfgAFzntEOZIhjm3PRMGh-1Vf2GeR?usp=sharing), including fill run, mask run, reference reconstructed volume from DSA scanner, reference mesh, and geometry description json file.
