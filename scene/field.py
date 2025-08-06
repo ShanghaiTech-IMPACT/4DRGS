@@ -15,6 +15,8 @@ class dynamic_field(nn.Module):
         super().__init__()
         self.conf = conf
         self.net = tcnn.NetworkWithInputEncoding(n_input_dims=4, n_output_dims=1, encoding_config=conf['hash4dgrid'], network_config=conf['net4d'])
+        if hasattr(tcnn, 'supports_jit_fusion'):
+            self.net.jit_fusion = tcnn.supports_jit_fusion()
     
     def get_dynamic_opacity(self, xyz, t):
         xyzt = torch.cat([xyz, t], dim=-1)
@@ -33,7 +35,11 @@ class static_dynamic_field(nn.Module):
         self.static_grid = tcnn.Encoding(n_input_dims=3, encoding_config=conf['hash3dgrid'], dtype=torch.float32)
         self.dynamic_grid = tcnn.Encoding(n_input_dims=4, encoding_config=conf['hash4dgrid'], dtype=torch.float32)
         self.net = tcnn.Network(n_input_dims=self.static_grid.n_output_dims + self.dynamic_grid.n_output_dims, n_output_dims=1, network_config=conf['net'])
-
+        if hasattr(tcnn, 'supports_jit_fusion'):
+            self.static_grid.jit_fusion = tcnn.supports_jit_fusion()
+            self.dynamic_grid.jit_fusion = tcnn.supports_jit_fusion()
+            self.net.jit_fusion = tcnn.supports_jit_fusion()
+    
     def get_dynamic_opacity(self, xyz, t):
         xyzt = torch.cat([xyz, t], dim=-1)
         static_feat = self.static_grid(xyz)
@@ -92,4 +98,5 @@ class field(nn.Module):
         return ret                
     
     
+
 
