@@ -9,7 +9,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 ![](./assest/overview.png)
 
 ## Setup
-First clone this repo. And then set up an environment and install packages. We use single RTX3090 for experiments.
+First clone this repo. And then set up an environment and install packages. C++ Compiler is required. We used Visual Studio 2019 for Windows and GCC 8.3.0 for Linux.
 
     git clone https://github.com/ShanghaiTech-IMPACT/4DRGS.git
     cd 4DRGS
