@@ -230,7 +230,9 @@ def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter):
             FDK_recon = CT_reconstructor.fdk(CT_reconstructor.projs, CT_reconstructor.PrimaryAngles) 
             FDK_recon = np.clip(FDK_recon, a_min=0, a_max=FDK_recon.max())
             pcd = vol_initializor(FDK_recon, recon_args, init_args, type='fdk')
-            sitk.WriteImage(sitk.GetImageFromArray(FDK_recon.transpose(2, 1, 0)), fdk_file)   # [H, W, D] ---> [D, H, W]
+            FDK_recon_img = sitk.GetImageFromArray(FDK_recon.transpose(2, 1, 0)) # [H, W, D] ---> [D, H, W]
+            FDK_recon_img.SetSpacing(recon_args['volume_spacing'])
+            sitk.WriteImage(FDK_recon_img, fdk_file)   
         else:
             print('Random initialization')
             pcd = random_initializor(recon_args, init_args)
@@ -245,6 +247,7 @@ def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter):
                            eval_indice=eval_indice,
                            all_indice=all_indice)
     return scene_info
+
 
 
 
