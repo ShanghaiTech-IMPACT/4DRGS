@@ -128,7 +128,9 @@ def voxel_query_reconstruction(scene, gaussians, pipe, dataset, phase='test'):
     )
     vol_pred = query_pkg["vol"]
     vol_pred = vol_pred.detach().cpu().numpy()
-    sitk.WriteImage(sitk.GetImageFromArray(vol_pred.transpose(2, 1, 0)), os.path.join(output_path, f'vol_pred.nii.gz'))
+    vol_pred_img = sitk.GetImageFromArray(vol_pred.transpose(2, 1, 0))
+    vol_pred_img.SetSpacing(scene.recon_args['volume_spacing'])
+    sitk.WriteImage(vol_pred_img, os.path.join(output_path, f'vol_pred.nii.gz'))
 
     # extract mesh and evaluate CD and HD metric
     mesh_pred_path = os.path.join(output_path, 'mesh_pred.obj')
@@ -198,3 +200,4 @@ if __name__ == "__main__":
     model = model.extract(args)
 
     render_sets(model, pipeline.extract(args), field_conf, args)
+
