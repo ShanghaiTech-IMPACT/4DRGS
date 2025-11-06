@@ -18,15 +18,15 @@ from utils.image_utils import data_norm
 
 class GaussianModel:
 
-    def setup_functions(self, scale_bouond=None):
+    def setup_functions(self, scale_bound=None):
         def build_covariance_from_scaling_rotation(scaling, scaling_modifier, rotation):
             L = build_scaling_rotation(scaling_modifier * scaling, rotation)
             actual_covariance = L @ L.transpose(1, 2)
             symm = strip_symmetric(actual_covariance)
             return symm
         
-        if scale_bouond is not None:
-            scale_min_bound, scale_max_bound = scale_bouond
+        if scale_bound is not None:
+            scale_min_bound, scale_max_bound = scale_bound
             assert(scale_min_bound < scale_max_bound), "scale_min_bound should be less than scale_max_bound"
             self.scaling_activation = lambda x: torch.sigmoid(x) * (scale_max_bound - scale_min_bound) + scale_min_bound
             self.scaling_inverse_activation = lambda x: inverse_sigmoid_clamp((x - scale_min_bound) / (scale_max_bound - scale_min_bound))
@@ -474,5 +474,6 @@ class GaussianModel:
         # self.xyz_gradient_accum[update_filter] += torch.norm(viewspace_point_tensor.grad[update_filter, 2:], dim=-1, keepdim=True)
         self.avgopacity_accum[update_filter] += dummy_opacity[update_filter]    
         self.denom[update_filter] += 1
+
 
 
