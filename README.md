@@ -9,7 +9,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 ![](./assest/overview.png)
 
 ## Updated Feature
-- **[2025-11-09]** We now support [LEAP toolbox](https://github.com/LLNL/leap) for FDK reconstruction. TIGRE toolbox may encounter a CUDA error as reported in [issue #3](https://github.com/ShanghaiTech-IMPACT/4DRGS/issues/3#issue-3094309948). You can select the desired toolbox in `arguments/__init__.py` via `ModelParams.fdk_toolbox`.
+- **[2025-11-09]** We now support [LEAP toolbox](https://github.com/LLNL/leap) for FDK reconstruction. [TIGRE toolbox](https://github.com/CERN/TIGRE) may encounter a CUDA error as reported in [issue #3](https://github.com/ShanghaiTech-IMPACT/4DRGS/issues/3#issue-3094309948). You can select the desired toolbox in `arguments/__init__.py` via `ModelParams.fdk_toolbox`.
 - **[2025-08-07]** tiny-cuda-nn now comes with a just-in-time (JIT) compilation mode. We have updated this feature in `scene/field.py` by setting `model.jit_fusion = tcnn.supports_jit_fusion()`, which provides some speed improvements. Note that `tinycudann>=2.0` is required. Results in our paper is reported with `tinycudann==1.7`.
 
 ## Setup
@@ -67,7 +67,7 @@ Use the following commands to test your trained model. It would conduct multi-vi
     python test.py -m=output/case2_30v_10k -s=./dataset/case2 --Nviews=30 --iteration=10000 --render_2d --render_fixview --VQR
 
 ## Related Links
-- Traditional FDK reconstruction is implemented based on [TIGRE-toolbox](https://github.com/CERN/TIGRE)
+- Traditional FDK reconstruction is implemented based on [TIGRE toolbox](https://github.com/CERN/TIGRE) and [LEAP toolbox](https://github.com/LLNL/leap)
 - The first 3DGS-based framework for CT reconstruction: [R<sup>2</sup>-Gaussian](https://github.com/Ruyi-Zha/r2_gaussian)
 - The first 3DGS-based framework for DSA image synthesis: [TOGS](https://github.com/hustvl/TOGS)
 - NeRF-based framework for DSA reconstruction: [VPAL](https://arxiv.org/abs/2405.10705), [TiAVox](https://arxiv.org/abs/2309.02318)
