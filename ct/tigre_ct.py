@@ -52,5 +52,5 @@ class tigre_ct:
         recon = tigre.algorithms.fdk(
             projs[:, ::-1, :], copy.deepcopy(self.geo), PrimaryAngles, filter=filter
         )
-        recon = recon.transpose((2, 1, 0))
+
         return recon
