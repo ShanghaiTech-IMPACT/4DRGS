@@ -41,6 +41,7 @@ class ModelParams(ParamGroup):
         self.data_device = "cuda"
         self.eval = True
         self.fdk_initial = True  # whether use fdk as initialization
+        self.fdk_toolbox = 'leap'  # 'tigre' or 'leap'
         self.M1 = 30_000  # initial sample points for main body
         self.M2 = 0  # initial sample points for residual
         self.use_scale_bound = True # whether use scale bound
@@ -121,3 +122,4 @@ def get_combined_args(parser : ArgumentParser):
         if v != None:
             merged_dict[k] = v
     return Namespace(**merged_dict)
+
