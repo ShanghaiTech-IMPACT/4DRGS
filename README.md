@@ -31,7 +31,20 @@ First clone this repo. And then set up an environment and install packages. C++ 
     cd ../../..
     pip install submodules/diff-Xray-gaussian-rasterization-voxelization
     pip install submodules/simple-knn
+
+Please refer to [LEAP toolbox](https://github.com/LLNL/leap) for your best installation. The following is what I do.
+
+    git clone https://github.com/LLNL/LEAP.git
+    cd LEAP
+    ### for windows user ###
+    .\etc\win_build.bat
+    copy /y .\win_build\bin\Release\libleapct.dll.
+    ### for linux user ###
+    sh ./etc/build.sh
+    cp ./build/lib/libleapct.so .
+    python manual_install.py
     
+
 ## Data-Preparation
 We provide `case2` in our paper, and you can find it in this [data link](https://drive.google.com/drive/folders/1vNnNfgAFzntEOZIhjm3PRMGh-1Vf2GeR?usp=sharing), including fill run, mask run, reference reconstructed volume from DSA scanner, reference mesh, and geometry description json file.
 You may use it for quick validation.
