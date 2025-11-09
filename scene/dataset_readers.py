@@ -6,6 +6,7 @@ from tqdm import tqdm
 from utils.graphics_utils import get_extrinsic, focal2fov, make_coords, BasicPointCloud
 import SimpleITK as sitk
 from ct.tigre_ct import tigre_ct
+from ct.leap_ct import leap_ct
 from plyfile import PlyData, PlyElement
 
 class CameraInfo(NamedTuple):
@@ -226,13 +227,22 @@ def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter):
         if init_args['fdk_initial']:
             print('FDK initialization')
             fdk_file = os.path.join(outpath, 'fdk_recon.nii.gz')
-            CT_reconstructor = tigre_ct(train_cam_infos, recon_args)
-            FDK_recon = CT_reconstructor.fdk(CT_reconstructor.projs, CT_reconstructor.PrimaryAngles) 
+            
+            if init_args['fdk_toolbox'] == 'tigre':
+                print('Using TIGRE toolbox for FDK reconstruction')
+                CT_reconstructor = tigre_ct(train_cam_infos, recon_args)
+            if init_args['fdk_toolbox'] == 'leap':
+                print('Using LEAP toolbox for FDK reconstruction')
+                CT_reconstructor = leap_ct(train_cam_infos, recon_args)
+
+            FDK_recon = CT_reconstructor.fdk(CT_reconstructor.projs, CT_reconstructor.PrimaryAngles)   # [numZ, numY, numX]
             FDK_recon = np.clip(FDK_recon, a_min=0, a_max=FDK_recon.max())
-            pcd = vol_initializor(FDK_recon, recon_args, init_args, type='fdk')
-            FDK_recon_img = sitk.GetImageFromArray(FDK_recon.transpose(2, 1, 0)) # [H, W, D] ---> [D, H, W]
+            
+            pcd = vol_initializor(FDK_recon.transpose(2, 1, 0), recon_args, init_args, type='fdk')
+            
+            FDK_recon_img = sitk.GetImageFromArray(FDK_recon) # [H, W, D] ---> [D, H, W]
             FDK_recon_img.SetSpacing(recon_args['volume_spacing'])
-            sitk.WriteImage(FDK_recon_img, fdk_file)   
+            sitk.WriteImage(FDK_recon_img, fdk_file)  
         else:
             print('Random initialization')
             pcd = random_initializor(recon_args, init_args)
@@ -247,6 +257,7 @@ def readSceneInfo(datapath, outpath, train_views, init_args, loaded_iter):
                            eval_indice=eval_indice,
                            all_indice=all_indice)
     return scene_info
+
 
 
 
