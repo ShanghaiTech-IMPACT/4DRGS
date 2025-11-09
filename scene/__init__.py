@@ -33,6 +33,7 @@ class Scene:
         init_args = {'M1': args.M1,
                      'M2': args.M2,
                      'fdk_initial': args.fdk_initial,
+                     'fdk_toolbox': args.fdk_toolbox,
                      'thres_percent_fdk': args.thres_percent_fdk}
         
         self.init_args = init_args
@@ -102,4 +103,5 @@ class Scene:
         indice['eval_indice'] = self.eval_indice
         indice['all_indice'] = self.all_indice
         return indice
+
 
