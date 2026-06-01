@@ -83,9 +83,11 @@ There may be some errors during code cleaning. If you have any questions on our 
 ## Citation
 If you think our work and repo are useful, you may cite our paper.
 
-    @article{4DRGS,
-      title={4DRGS: 4D Radiative Gaussian Splatting for Efficient 3D Vessel Reconstruction from Sparse-View Dynamic DSA Images},
+    @inproceedings{4DRGS,
+      title={4DRGS: 4D radiative gaussian splatting for efficient 3D vessel reconstruction from sparse-view dynamic DSA images},
       author={Liu, Zhentao and Zha, Ruyi and Zhao, Huangxuan and Li, Hongdong and Cui, Zhiming},
-      journal={arXiv preprint arXiv:2412.12919},
-      year={2024}
+      booktitle={International Conference on Information Processing in Medical Imaging},
+      pages={361--374},
+      year={2025},
+      organization={Springer}
     }
