@@ -14,7 +14,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 - **[2025-08-07]** tiny-cuda-nn now comes with a just-in-time (JIT) compilation mode. We have updated this feature in `scene/field.py` by setting `model.jit_fusion = tcnn.supports_jit_fusion()`, which provides some speed improvements. Note that `tinycudann>=2.0` is required. Results in our paper is reported with `tinycudann==1.7`.
 
 ## Sort-free X-ray rasterization
-X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its result does not depend on the depth order of Gaussians. The sort-free backend removes tile duplication, prefix-sum, and depth-sorting stages. It is the default backend; the original implementation remains available for comparison:
+X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its result does not depend on the depth order of Gaussians. In contrast, the original 3DGS uses depth sorting for order-dependent alpha compositing. The sort-free backend removes tile duplication, prefix-sum, and depth-sorting stages. It is the default backend; the original implementation remains available for comparison:
 
     --rasterizer_backend sort_free  # default
     --rasterizer_backend legacy
@@ -28,7 +28,7 @@ The following results were measured locally on case2 with 30 input views and an 
 | 30k / 15k | Legacy | 1380.66 | 21.73 | 46.02 | 36.343 | 0.9032 |
 | 30k / 15k | Sort-free | 1175.09 | 25.53 | 39.17 | 36.407 | 0.9031 |
 
-The runtime reported in the paper was measured on an NVIDIA RTX 3090 and includes the final voxelization and rendering stages; the local RTX 4060 Ti measurements above should therefore not be compared directly with the paper's absolute runtime.
+The runtime reported in the paper was measured on an NVIDIA RTX 3090.
 
 ## Setup
 First clone this repo. And then set up an environment and install packages. C++ Compiler is required. We used Visual Studio 2019 for Windows and GCC 8.3.0 for Linux.
@@ -110,3 +110,4 @@ If you think our work and repo are useful, you may cite our paper.
       year={2025},
       organization={Springer}
     }
+
