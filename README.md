@@ -9,8 +9,26 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 ![](./assest/overview.png)
 
 ## Updated Feature
+- **[2026-08-24]** We introduce sort-free X-ray rasterization, which removes unnecessary depth sorting for additive X-ray line-integral accumulation. On case2 with 30 input views, it reduces runtime by 14.9%--15.4% (1.17x--1.18x speedup) on a local NVIDIA RTX 4060 Ti while maintaining comparable PSNR and SSIM.
 - **[2025-11-09]** We now support [LEAP toolbox](https://github.com/LLNL/leap) for FDK reconstruction. [TIGRE toolbox](https://github.com/CERN/TIGRE) may encounter a CUDA error as reported in [issue #3](https://github.com/ShanghaiTech-IMPACT/4DRGS/issues/3#issue-3094309948). You can select the desired toolbox in `arguments/__init__.py` via `ModelParams.fdk_toolbox`.
 - **[2025-08-07]** tiny-cuda-nn now comes with a just-in-time (JIT) compilation mode. We have updated this feature in `scene/field.py` by setting `model.jit_fusion = tcnn.supports_jit_fusion()`, which provides some speed improvements. Note that `tinycudann>=2.0` is required. Results in our paper is reported with `tinycudann==1.7`.
+
+## Sort-free X-ray rasterization
+X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its result does not depend on the depth order of Gaussians. The sort-free backend removes tile duplication, prefix-sum, and depth-sorting stages. It is the default backend; the original implementation remains available for comparison:
+
+    --rasterizer_backend sort_free  # default
+    --rasterizer_backend legacy
+
+The following results were measured locally on case2 with 30 input views and an NVIDIA RTX 4060 Ti:
+
+| Iterations / ADC until | Backend | Runtime (s) | Iteration/s | ms/iteration | Eval PSNR | Eval SSIM |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 10k / 5k | Legacy | 453.10 | 22.07 | 45.31 | 36.343 | 0.9026 |
+| 10k / 5k | Sort-free | 383.51 | 26.07 | 38.35 | 36.349 | 0.9021 |
+| 30k / 15k | Legacy | 1380.66 | 21.73 | 46.02 | 36.343 | 0.9032 |
+| 30k / 15k | Sort-free | 1175.09 | 25.53 | 39.17 | 36.407 | 0.9031 |
+
+The runtime reported in the paper was measured on an NVIDIA RTX 3090 and includes the final voxelization and rendering stages; the local RTX 4060 Ti measurements above should therefore not be compared directly with the paper's absolute runtime.
 
 ## Setup
 First clone this repo. And then set up an environment and install packages. C++ Compiler is required. We used Visual Studio 2019 for Windows and GCC 8.3.0 for Linux.
@@ -29,7 +47,8 @@ First clone this repo. And then set up an environment and install packages. C++ 
     cd tiny-cuda-nn/bindings/torch
     python setup.py install
     cd ../../..
-    pip install submodules/diff-Xray-gaussian-rasterization-voxelization
+    pip install submodules/diff-Xray-gaussian-rasterization-voxelization-sortfree
+    pip install submodules/diff-Xray-gaussian-rasterization-voxelization-legacy
     pip install submodules/simple-knn
 
 Please refer to [LEAP toolbox](https://github.com/LLNL/leap) for your best installation. The following is what I do.

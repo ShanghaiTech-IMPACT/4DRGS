@@ -62,6 +62,7 @@ class PipelineParams(ParamGroup):
     def __init__(self, parser):
         self.compute_cov3D_python = False
         self.debug = False
+        self.rasterizer_backend = "sort_free"
         super().__init__(parser, "Pipeline Parameters")
 
 
