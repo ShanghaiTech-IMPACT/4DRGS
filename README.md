@@ -28,7 +28,7 @@ The following results were measured locally on case2 with 30 input views and an 
 | 30k / 15k | Legacy | 1380.66 | 21.73 | 46.02 | 36.343 | 0.9032 |
 | 30k / 15k | Sort-free | 1175.09 | 25.53 | 39.17 | 36.407 | 0.9031 |
 
-The runtime reported in the paper was measured on an NVIDIA RTX 3090.
+Note that the runtime reported in the paper was measured on an NVIDIA RTX 3090.
 
 ## Setup
 First clone this repo. And then set up an environment and install packages. C++ Compiler is required. We used Visual Studio 2019 for Windows and GCC 8.3.0 for Linux.
