@@ -14,7 +14,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 - **[2025-08-07]** tiny-cuda-nn now comes with a just-in-time (JIT) compilation mode. We have updated this feature in `scene/field.py` by setting `model.jit_fusion = tcnn.supports_jit_fusion()`, which provides some speed improvements. Note that `tinycudann>=2.0` is required. Results in our paper is reported with `tinycudann==1.7`.
 
 ## Sort-free X-ray rasterization
-X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its result does not depend on the depth order of Gaussians. In contrast, the original 3DGS uses depth sorting for order-dependent alpha compositing. The sort-free backend removes tile duplication, prefix-sum, and depth-sorting stages. It is the default backend; the original implementation remains available for comparison:
+X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its result does not depend on the depth order of Gaussians. In contrast, the original 3DGS uses depth sorting for order-dependent alpha compositing. The sort-free backend removes tile duplication, prefix-sum, and depth-sorting stages. It is the default backend; users can select either implementation with the `--rasterizer_backend` CLI argument:
 
     --rasterizer_backend sort_free  # default
     --rasterizer_backend legacy
