@@ -9,7 +9,7 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 ![](./assest/overview.png)
 
 ## Updated Feature
-- **[2026-08-24]** We introduce sort-free X-ray rasterization, which removes unnecessary depth sorting for additive X-ray line-integral accumulation. On case2 with 30 input views, it reduces runtime by 14.9%--15.4% (1.17x--1.18x speedup) on a local NVIDIA RTX 4060 Ti while maintaining comparable PSNR and SSIM.
+- **[2026-08-24]** We introduce sort-free X-ray rasterization, which removes unnecessary depth sorting for additive X-ray line-integral accumulation. On `case2` with 30 input views, it reduces runtime by 14.9%--15.4% (1.17x--1.18x speedup) on a local NVIDIA RTX 4060 Ti while maintaining comparable PSNR and SSIM.
 - **[2025-11-09]** We now support [LEAP toolbox](https://github.com/LLNL/leap) for FDK reconstruction. [TIGRE toolbox](https://github.com/CERN/TIGRE) may encounter a CUDA error as reported in [issue #3](https://github.com/ShanghaiTech-IMPACT/4DRGS/issues/3#issue-3094309948). You can select the desired toolbox in `arguments/__init__.py` via `ModelParams.fdk_toolbox`.
 - **[2025-08-07]** tiny-cuda-nn now comes with a just-in-time (JIT) compilation mode. We have updated this feature in `scene/field.py` by setting `model.jit_fusion = tcnn.supports_jit_fusion()`, which provides some speed improvements. Note that `tinycudann>=2.0` is required. Results in our paper is reported with `tinycudann==1.7`.
 
@@ -19,7 +19,7 @@ X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its r
     --rasterizer_backend sort_free  # default
     --rasterizer_backend legacy
 
-The following results were measured locally on case2 with 30 input views and an NVIDIA RTX 4060 Ti:
+The following results were measured locally on `case2` with 30 input views and an NVIDIA RTX 4060 Ti:
 
 | Iterations / ADC until | Backend | Runtime (s) | Iteration/s | ms/iteration | Eval PSNR | Eval SSIM |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
