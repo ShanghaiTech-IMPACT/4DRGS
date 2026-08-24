@@ -14,14 +14,12 @@ import math
 from diff_Xray_gaussian_rasterization_voxelization import (
     GaussianRasterizationSettings as SortFreeRasterizationSettings,
     GaussianRasterizer as SortFreeRasterizer,
-    GaussianVoxelizationSettings as SortFreeVoxelizationSettings,
-    GaussianVoxelizer as SortFreeVoxelizer,
+    GaussianVoxelizationSettings,
+    GaussianVoxelizer,
 )
 from diff_Xray_gaussian_rasterization_voxelization_legacy import (
     GaussianRasterizationSettings as LegacyRasterizationSettings,
     GaussianRasterizer as LegacyRasterizer,
-    GaussianVoxelizationSettings as LegacyVoxelizationSettings,
-    GaussianVoxelizer as LegacyVoxelizer,
 )
 from scene.gaussian_model import GaussianModel
 from scene.cameras import Camera
@@ -29,22 +27,12 @@ import numpy as np
 import copy
 
 
-def _backend_classes(pipe):
+def _rasterizer_classes(pipe):
     backend = getattr(pipe, "rasterizer_backend", "sort_free")
     if backend == "sort_free":
-        return (
-            SortFreeRasterizationSettings,
-            SortFreeRasterizer,
-            SortFreeVoxelizationSettings,
-            SortFreeVoxelizer,
-        )
+        return SortFreeRasterizationSettings, SortFreeRasterizer
     if backend == "legacy":
-        return (
-            LegacyRasterizationSettings,
-            LegacyRasterizer,
-            LegacyVoxelizationSettings,
-            LegacyVoxelizer,
-        )
+        return LegacyRasterizationSettings, LegacyRasterizer
     raise ValueError(f"Unknown rasterizer backend: {backend}")
 
 def query(pc: GaussianModel, 
@@ -63,8 +51,7 @@ def query(pc: GaussianModel,
     """
 
     
-    _, _, VoxelizationSettings, Voxelizer = _backend_classes(pipe)
-    voxel_settings = VoxelizationSettings(
+    voxel_settings = GaussianVoxelizationSettings(
         scale_modifier=scaling_modifier,
         nVoxel_x=int(nVoxel[0]),
         nVoxel_y=int(nVoxel[1]),
@@ -78,7 +65,7 @@ def query(pc: GaussianModel,
         prefiltered=False,
         debug=pipe.debug,
     )
-    voxelizer = Voxelizer(voxel_settings=voxel_settings)
+    voxelizer = GaussianVoxelizer(voxel_settings=voxel_settings)
 
     means3D = pc.get_xyz
 
@@ -138,7 +125,7 @@ def render(
     tanfovx = math.tan(viewpoint_camera.FoVx * 0.5)
     tanfovy = math.tan(viewpoint_camera.FoVy * 0.5)
 
-    RasterizationSettings, Rasterizer, _, _ = _backend_classes(pipe)
+    RasterizationSettings, Rasterizer = _rasterizer_classes(pipe)
     raster_settings = RasterizationSettings(
         image_height=int(viewpoint_camera.image_height),
         image_width=int(viewpoint_camera.image_width),
@@ -198,4 +185,12 @@ def render(
         cov3D_precomp=cov3D_precomp,
     )
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
-    # They will be excluded from valu×N¸êÚ$z{-®éÜj×ÄÔÀÀÀ4(€€€€€€€Í•±˜¹‘•¹Í¥™å}™É½µ}¥Ñ•È€ô€ÔÀÀ4(€€€€€€€Í•±˜¹‘•¹Í¥™å}É…‘}Ñ¡É•Í¡½±‘}¥¹¥Ğ€ô€À¸ÀÀÀÄ€€Œ€À¸ÀÀÀÄ4(€€€€€€€Í•±˜¹‘•¹Í¥™å}É…‘}Ñ¡É•Í¡½±‘}™¥¹…°€ô€À¸ÀÀÀÄ€Œ€À¸ÀÀÀÀØ4(€€€€€€€Í•±˜¹Á•É•¹Ñ}‘•¹Í•}¥¹¥Ğ€ô€È¸Ô€€Œ¹Õ´½˜Ù½á•±Ì4(€€€€€€€Í•±˜¹Á•É•¹Ñ}‘•¹Í•}™¥¹…°€ô€À¸Ô€€Œ¹Õ´½˜Ù½á•±Ì4(€€€€€€€Í•±˜¹É…¹‘½µ}ÁÉÕ¹”€ô…±Í”4(€€€€€€€Í•±˜¹Á•É•¹Ñ}É…¹‘½µ}ÁÉÕ¹•}¥¹¥Ğ€ô€À¸Àà€€Œ€À¸Ä4(€€€€€€€Í•±˜¹Á•É•¹Ñ}É…¹‘½µ}ÁÉÕ¹•}™¥¹…°€ô€À¸Àà€€Œ€À¸ÀØ4(€€€€€€€Í•±˜¹½Á…¥Ñå}ÁÉÕ¹”€ô…±Í”4(€€€€€€€Í•±˜¹µ¥¹}½Á…¥Ñå}¥¹¥Ğ€ô€Å”´Ø4(€€€€€€€Í•±˜¹µ¥¹}½Á…¥Ñå}™¥¹…°€ô€Å”´Ø4(€€€€€€€Í•±˜¹…Ù½Á…¥Ñå}ÁÉÕ¹”€ôQÉÕ”4(€€€€€€€Í•±˜¹µ¥¹}…Ù½Á…¥Ñå}¥¹¥Ğ€ô€Å”´Ø4(€€€€€€€Í•±˜¹µ¥¹}…Ù½Á…¥Ñå}™¥¹…°€ô€Å”´Ø4(€€€€€€€Í•±˜¹µ…á}ÍÉ••¹}Í¥é”€ô9½¹”4(€€€€€€€Í•±˜¹™±½İ}½¹Í¥ÍÑ•¹ä€ôQÉÕ”4(€€€€€€€Í•±˜¹QA}ÍÑ€ô€Ä¸À4(€€€€€€€ÍÕÁ•È ¤¹}}¥¹¥Ñ}|¡Á…ÉÍ•È°€‰=ÁÑ¥µ¥é…Ñ¥½¸A…É…µ•Ñ•ÉÌˆ¤4(4)‘•˜•Ñ}½µ‰¥¹•‘}…ÉÌ¡Á…ÉÍ•È€èÉÕµ•¹ÑA…ÉÍ•È¤è4(€€€µ‘±¹•}ÍÑÉ¥¹œ€ôÍåÌ¹…ÉÙlÄét4(€€€™™¥±•}ÍÑÉ¥¹œ€ô€‰9…µ•ÍÁ…” ¤ˆ4(€€€…ÉÍ}µ‘±¥¹”€ôÁ…ÉÍ•È¹Á…ÉÍ•}…ÉÌ¡µ‘±¹•}ÍÑÉ¥¹œ¤4(4(€€€ÑÉäè4(€€€€€€€™™¥±•Á…Ñ €ô½Ì¹Á…Ñ ¹©½¥¸¡…ÉÍ}µ‘±¥¹”¹µ½‘•±}Á…Ñ °€‰™}…ÉÌˆ¤4(€€€€€€€ÁÉ¥¹Ğ ‰1½½­¥¹œ™½È½¹™¥œ™¥±”¥¸ˆ°™™¥±•Á…Ñ ¤4(€€€€€€€İ¥Ñ ½Á•¸¡™™¥±•Á…Ñ ¤…Ì™}™¥±”è4(€€€€€€€€€€€ÁÉ¥¹Ğ ‰½¹™¥œ™¥±”™½Õ¹èíôˆ¹™½Éµ…Ğ¡™™¥±•Á…Ñ ¤¤4(€€€€€€€€€€€™™¥±•}ÍÑÉ¥¹œ€ô™}™¥±”¹É•… ¤4(€€€•á•ÁĞQåÁ•ÉÉ½Èè4(€€€€€€€ÁÉ¥¹Ğ ‰½¹™¥œ™¥±”¹½Ğ™½Õ¹…Ğˆ¤4(€€€€€€€Á…ÍÌ4(€€€…ÉÍ}™™¥±”€ô•Ù…°¡™™¥±•}ÍÑÉ¥¹œ¤4(4(€€€µ•É•‘}‘¥Ğ€ôÙ…ÉÌ¡…ÉÍ}™™¥±”¤¹½Áä ¤4(€€€™½È¬±Ø¥¸Ù…ÉÌ¡…ÉÍ}µ‘±¥¹”¤¹¥Ñ•µÌ ¤è4(€€€€€€€¥˜Ø€„ô9½¹”è4(€€€€€€€€€€€µ•É•‘}‘¥Ñm­t€ôØ4(€€€É•ÑÕÉ¸9…µ•ÍÁ…” ¨©µ•É•‘}‘¥Ğ¤4(4(
+    # They will be excluded from value updates used in the splitting criteria.
+    return {
+        "render": rendered_image,
+        "viewspace_points": screenspace_points,
+        "visibility_filter": radii > 0,
+        "radii": radii,
+        "render_geo": render_others[0:1],
+        "dummy_opacity": dummy_opacity,
+    }

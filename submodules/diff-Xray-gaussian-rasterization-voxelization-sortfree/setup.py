@@ -36,7 +36,7 @@ setup(
                 "nvcc": [
                     "-I"
                     + os.path.join(
-                        os.path.dirname(os.path.abspath(__file__)), "../diff-Xray-gaussian-rasterization-voxelization/third_party/glm/"
+                        os.path.dirname(os.path.abspath(__file__)), "third_party/glm/"
                     )
                 ]
             },
