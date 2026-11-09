@@ -24,7 +24,7 @@ Inspired by [FaCT-GS](https://github.com/PaPieta/fact-gs), we introduce three op
 
 ### Training speed
 
-Benchmarked on Case2 with 30 views on a single NVIDIA RTX 4060 Ti, using 30K optimization steps with ADC enabled for the first 15K steps.
+Benchmarked on Case2 with 30 views and 30K optimization steps, with ADC enabled for the first 15K steps. Training and voxelization are conducted on a single NVIDIA RTX 4060 Ti.
 
 | Configuration | Training time (s) | Speedup | Eval PSNR (dB) | Eval SSIM |
 |---|---:|---:|---:|---:|
