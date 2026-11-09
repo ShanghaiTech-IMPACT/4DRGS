@@ -9,26 +9,47 @@ We present 4DRGS, the first Gaussian splatting-based framework for efficient 3D 
 ![](./assest/overview.png)
 
 ## Updated Feature
-- **[2026-08-24]** We introduce sort-free X-ray rasterization, which removes unnecessary depth sorting for additive X-ray line-integral accumulation. On `case2` with 30 input views, it reduces runtime by 14.9%--15.4% (1.17x--1.18x speedup) on a local NVIDIA RTX 4060 Ti while maintaining comparable PSNR and SSIM.
+
+- **[2026-11-09]** Inspired by [FaCT-GS](https://github.com/PaPieta/fact-gs), we optimize CUDA computations for SSIM, rasterization, and voxelization, achieving a **2.67× training speedup** with comparable reconstruction quality.
 - **[2025-11-09]** We now support [LEAP toolbox](https://github.com/LLNL/leap) for FDK reconstruction. [TIGRE toolbox](https://github.com/CERN/TIGRE) may encounter a CUDA error as reported in [issue #3](https://github.com/ShanghaiTech-IMPACT/4DRGS/issues/3#issue-3094309948). You can select the desired toolbox in `arguments/__init__.py` via `ModelParams.fdk_toolbox`.
 - **[2025-08-07]** tiny-cuda-nn now comes with a just-in-time (JIT) compilation mode. We have updated this feature in `scene/field.py` by setting `model.jit_fusion = tcnn.supports_jit_fusion()`, which provides some speed improvements. Note that `tinycudann>=2.0` is required. Results in our paper is reported with `tinycudann==1.7`.
 
-## Sort-free X-ray rasterization
-X-ray rasterization in 4DRGS is an additive line-integral accumulation, so its result does not depend on the depth order of Gaussians. In contrast, the original 3DGS uses depth sorting for order-dependent alpha compositing. The sort-free backend removes tile duplication, prefix-sum, and depth-sorting stages. It is the default backend; users can select either implementation with the `--rasterizer_backend` CLI argument:
+## Improved CUDA Computation
 
-    --rasterizer_backend sort_free  # default
-    --rasterizer_backend legacy
+Inspired by [FaCT-GS](https://github.com/PaPieta/fact-gs), we introduce three optimizations:
 
-The following results were measured locally on `case2` with 30 input views and an NVIDIA RTX 4060 Ti:
+- **SSIM:** a standalone [fused CUDA implementation](https://github.com/rahul-goel/fused-ssim), preserving the window, padding, reduction, and loss weight.
+- **Rasterization:** tighter bounds based on covariance, density, and contribution thresholds; 32-bit tile-ID sorting without depth sorting, since additive X-ray attenuation is order-independent; and per-Gaussian–tile backward accumulation with warp-level gradient reuse.
+- **Voxelization:** remove depth sorting while retaining tile grouping, because Gaussian contribution summation is order-independent.
 
-| Iterations / ADC until | Backend | Runtime (s) | Iteration/s | ms/iteration | Eval PSNR | Eval SSIM |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| 10k / 5k | Legacy | 453.10 | 22.07 | 45.31 | 36.343 | 0.9026 |
-| 10k / 5k | Sort-free | 383.51 | 26.07 | 38.35 | 36.349 | 0.9021 |
-| 30k / 15k | Legacy | 1380.66 | 21.73 | 46.02 | 36.343 | 0.9032 |
-| 30k / 15k | Sort-free | 1175.09 | 25.53 | 39.17 | 36.407 | 0.9031 |
+### Training speed
 
-Note that the runtime reported in the paper was measured on an NVIDIA RTX 3090.
+Benchmarked on Case2 with 30 views and 30K optimization steps, with ADC enabled for the first 15K steps.
+
+| Configuration | Training time (s) | Speedup | Eval PSNR (dB) | Eval SSIM |
+|---|---:|---:|---:|---:|
+| Legacy + PyTorch SSIM | 1247.46 | 1.00× | 36.349 | 0.9030 |
+| Fast + PyTorch SSIM | 1030.07 | **1.21×** | 36.349 | 0.9030 |
+| Legacy + fused SSIM | 677.72 | **1.84×** | 36.338 | 0.9029 |
+| Fast + fused SSIM | 466.82 | **2.67×** | 36.344 | 0.9030 |
+
+### Voxelization speed
+
+| Backend | Voxelization time (ms) | Speedup |
+|---|---:|---:|
+| Legacy | 96.76 | 1.00× |
+| Fast | 50.31 | **1.92×** |
+
+### Usage
+
+```bash
+--rasterizer_backend legacy --ssim_backend torch  # default
+--rasterizer_backend fast   --ssim_backend torch
+--rasterizer_backend legacy --ssim_backend fused
+--rasterizer_backend fast   --ssim_backend fused
+```
+
+`--voxelizer_backend auto` follows the rasterizer backend; set `legacy` or `fast` to select it independently.
 
 ## Setup
 First clone this repo. And then set up an environment and install packages. C++ Compiler is required. We used Visual Studio 2019 for Windows and GCC 8.3.0 for Linux.
@@ -47,24 +68,25 @@ First clone this repo. And then set up an environment and install packages. C++ 
     cd tiny-cuda-nn/bindings/torch
     python setup.py install
     cd ../../..
-    pip install submodules/diff-Xray-gaussian-rasterization-voxelization-sortfree
+    pip install submodules/diff-Xray-gaussian-rasterization-voxelization-fast
     pip install submodules/diff-Xray-gaussian-rasterization-voxelization-legacy
     pip install submodules/simple-knn
+    pip install submodules/fused-ssim
 
 Please refer to [LEAP toolbox](https://github.com/LLNL/leap) for your best installation. The following is what I do.
 
     git clone https://github.com/LLNL/LEAP.git
     cd LEAP
-    
+
     ## for windows user ##
     .\etc\win_build.bat
     copy /y .\win_build\bin\Release\libleapct.dll.
     ## for linux user ##
     sh ./etc/build.sh
     cp ./build/lib/libleapct.so .
-    
+
     python manual_install.py
-    
+
 
 ## Data-Preparation
 We provide `case2` in our paper, and you can find it in this [data link](https://drive.google.com/drive/folders/1vNnNfgAFzntEOZIhjm3PRMGh-1Vf2GeR?usp=sharing), including fill run, mask run, reference reconstructed volume from DSA scanner, reference mesh, and geometry description json file.
@@ -110,4 +132,3 @@ If you think our work and repo are useful, you may cite our paper.
       year={2025},
       organization={Springer}
     }
-

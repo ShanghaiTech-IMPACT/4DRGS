@@ -15,6 +15,7 @@ from arguments import ModelParams, PipelineParams, OptimizationParams
 from pyhocon import ConfigFactory, HOCONConverter
 import numpy as np
 import time as timeloger
+import json
 from test import *
 
 try:
@@ -23,10 +24,17 @@ try:
 except ImportError:
     TENSORBOARD_FOUND = False
 
-def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, saving_iterations, debug_from):
-    
-    start_time = timeloger.time()
+def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, saving_iterations, debug_from, skip_vqr=False):
 
+    if pipe.ssim_backend == "fused":
+        from fused_ssim import fused_ssim
+        def ssim_loss_fn(image, target):
+            # CHW -> NCHW. Same 11x11 sigma=1.5 window, constants and zero padding.
+            return fused_ssim(image.unsqueeze(0), target.unsqueeze(0), padding="same", train=True)
+    elif pipe.ssim_backend == "torch":
+        ssim_loss_fn = ssim
+    else:
+        raise ValueError(f"Unknown SSIM backend: {pipe.ssim_backend}")
     scale_bound = None
     if dataset.use_scale_bound:
         if dataset.scale_min is not None and dataset.scale_max is not None:
@@ -35,19 +43,23 @@ def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, savi
 
     scene = Scene(dataset, gaussians, scale_bound)
     first_iter = 0
-    
+
     testing_iterations = np.array(testing_iterations) + first_iter
     saving_iterations = np.array(saving_iterations) + first_iter
     gaussians.training_setup(opt, first_iter)
     gaussians.densify_setup(opt, first_iter)
     densify_from_iter = opt.densify_from_iter + first_iter
     densify_until_iter = opt.densify_until_iter + first_iter
-    
+
     viewpoint_stack = None
     progress_bar = tqdm(range(first_iter, opt.iterations), desc="Training progress", initial=first_iter, total=opt.iterations)
     first_iter += 1
-    for iteration in range(first_iter, opt.iterations + 1):        
-        
+    excluded_checkpoint_time = 0.0
+    excluded_eval_time = 0.0
+    torch.cuda.synchronize()
+    loop_start_time = timeloger.perf_counter()
+    for iteration in range(first_iter, opt.iterations + 1):
+
         # with torch.autograd.set_detect_anomaly(True):
 
             gaussians.update_learning_rate(iteration)
@@ -75,7 +87,7 @@ def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, savi
             gt_image = viewpoint_cam.original_image.cuda()
 
             loss['Ll1'] = l1_loss(image, gt_image)
-            loss['Ldssim'] = (1.0 - ssim(image, gt_image))
+            loss['Ldssim'] = (1.0 - ssim_loss_fn(image, gt_image))
             loss['Ltotal'] = (1.0 - opt.lambda_dssim) * loss['Ll1'] + opt.lambda_dssim * loss['Ldssim']
             loss['Ltotal'].backward()
 
@@ -92,10 +104,14 @@ def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, savi
                     progress_bar.update(10)
                 if iteration == opt.iterations:
                     progress_bar.close()
-            
+
                 if (iteration in saving_iterations):
                     print("\n[ITER {}] Saving Gaussians".format(iteration))
-                    scene.save(iteration) 
+                    torch.cuda.synchronize()
+                    checkpoint_start = timeloger.perf_counter()
+                    scene.save(iteration)
+                    torch.cuda.synchronize()
+                    excluded_checkpoint_time += timeloger.perf_counter() - checkpoint_start
 
                 prune_num_record = None
                 split_prune_mask = None
@@ -115,34 +131,69 @@ def training(tb_writer, dataset, field_conf, opt, pipe, testing_iterations, savi
                         scene.gaussians.densification_postfix(d_split)
 
                 # Log and save
-                training_report(tb_writer, iteration, loss, prune_num_record, testing_iterations, scene, render, pipe)
+                excluded_eval_time += training_report(
+                    tb_writer,
+                    iteration,
+                    loss,
+                    prune_num_record,
+                    testing_iterations,
+                    scene,
+                    render,
+                    pipe,
+                )
 
                 # Optimizer step
                 if iteration < opt.iterations:
                     gaussians.optimizer.step()
                     gaussians.optimizer.zero_grad(set_to_none = True)
 
-    end_time = timeloger.time()
-    elapsed_time = end_time - start_time
+    torch.cuda.synchronize()
+    loop_elapsed_time = timeloger.perf_counter() - loop_start_time
+    elapsed_time = loop_elapsed_time - excluded_checkpoint_time - excluded_eval_time
     minutes = elapsed_time // 60
     seconds = elapsed_time % 60
+    iteration_count = opt.iterations - first_iter + 1
+    iterations_per_second = iteration_count / elapsed_time
+    milliseconds_per_iteration = 1000.0 * elapsed_time / iteration_count
+    timing = {
+        "rasterizer_backend": pipe.rasterizer_backend,
+        "ssim_backend": pipe.ssim_backend,
+        "iterations": iteration_count,
+        "core_training_seconds": elapsed_time,
+        "iterations_per_second": iterations_per_second,
+        "milliseconds_per_iteration": milliseconds_per_iteration,
+        "training_loop_seconds": loop_elapsed_time,
+        "excluded_checkpoint_seconds": excluded_checkpoint_time,
+        "excluded_eval_seconds": excluded_eval_time,
+    }
     # All done
-    print(f"\nTraining complete in {int(minutes)} minutes and {int(seconds)} seconds.")
-    with open(os.path.join(args.model_path, "time.txt"), 'w') as file:
-        file.write(f"Training complete in {int(minutes)} minutes and {int(seconds)} seconds.")
+    print(f"\nCore training complete in {int(minutes)} minutes and {seconds:.3f} seconds.")
+    print(f"Core throughput: {iterations_per_second:.4f} iteration/s ({milliseconds_per_iteration:.3f} ms/iteration).")
+    with open(os.path.join(dataset.model_path, "time.txt"), 'w') as file:
+        file.write(
+            f"Core training complete in {int(minutes)} minutes and {seconds:.3f} seconds.\n"
+            f"Iterations: {iteration_count}\n"
+            f"Iteration/s: {iterations_per_second:.6f}\n"
+            f"ms/iteration: {milliseconds_per_iteration:.6f}\n"
+            f"Excluded checkpoint: {excluded_checkpoint_time:.6f} seconds\n"
+            f"Excluded eval: {excluded_eval_time:.6f} seconds\n"
+        )
+    with open(os.path.join(dataset.model_path, "core_training_timing.json"), 'w') as file:
+        json.dump(timing, file, indent=2)
 
     with torch.no_grad():
-        voxel_query_reconstruction(scene, gaussians, pipe, dataset, 'train')
+        if not skip_vqr:
+            voxel_query_reconstruction(scene, gaussians, pipe, dataset, 'train')
         render_set(scene, gaussians, pipe, dataset, 'train')
 
-def prepare_output_and_logger(args):    
+def prepare_output_and_logger(args):
     if not args.model_path:
         if os.getenv('OAR_JOB_ID'):
             unique_str=os.getenv('OAR_JOB_ID')
         else:
             unique_str = str(uuid.uuid4())
         args.model_path = os.path.join("./output/", unique_str[0:10])
-        
+
     # Set up output folder
     print("Output folder: {}".format(args.model_path))
     os.makedirs(args.model_path, exist_ok = True)
@@ -158,7 +209,7 @@ def prepare_output_and_logger(args):
     return tb_writer
 
 def training_report(tb_writer, iteration, loss, prune_num_record, testing_iterations, scene : Scene, renderFunc, pipe):
-    
+
     if tb_writer:
         for key in list(loss.keys()):
             tb_writer.add_scalar(f"train_loss_{key}", loss[key].item(), iteration)
@@ -170,7 +221,7 @@ def training_report(tb_writer, iteration, loss, prune_num_record, testing_iterat
         tb_writer.add_scalar('avgopacity_min', avgopacity.min().item(), iteration)
         tb_writer.add_scalar('avgopacity_max', avgopacity.max().item(), iteration)
         tb_writer.add_scalar('avgopacity_mean', avgopacity.mean().item(), iteration)
-        tb_writer.add_scalar('avgopacity_median', avgopacity.median().item(), iteration)            
+        tb_writer.add_scalar('avgopacity_median', avgopacity.median().item(), iteration)
         tb_writer.add_histogram('avgopacity', avgopacity, iteration)
 
         if prune_num_record is not None:
@@ -178,7 +229,10 @@ def training_report(tb_writer, iteration, loss, prune_num_record, testing_iterat
                 tb_writer.add_scalar(f"{key}", prune_num_record[key], iteration)
 
     # Report test and samples of training set
+    eval_elapsed_time = 0.0
     if iteration in testing_iterations:
+        torch.cuda.synchronize()
+        eval_start_time = timeloger.perf_counter()
         torch.cuda.empty_cache()
         validation_configs = ({'name': 'test', 'cameras' : scene.getTestCameras()},    # test set全部进行了测试计算PNSR，但是只取前五个进行展示
                               {'name': 'train', 'cameras' : [scene.getTrainCameras()[idx % len(scene.getTrainCameras())] for idx in range(5, 30, 5)]}) # train set只取五个计算PNSR和展示
@@ -190,7 +244,7 @@ def training_report(tb_writer, iteration, loss, prune_num_record, testing_iterat
                     render_pkg = renderFunc(viewpoint, scene.gaussians, scene.recon_args, 0, pipe)
                     image = render_pkg["render"]
                     gt_image = viewpoint.original_image.to("cuda")
-                    image = data_norm(torch.clamp(image, 0, image.max()))                    
+                    image = data_norm(torch.clamp(image, 0, image.max()))
                     gt_image = data_norm(torch.clamp(gt_image, 0, gt_image.max()))
                     geomap = render_pkg["render_geo"]
                     geomap = data_norm(torch.clamp(geomap, 0, geomap.max()))
@@ -201,12 +255,16 @@ def training_report(tb_writer, iteration, loss, prune_num_record, testing_iterat
                             tb_writer.add_images(config['name'] + f"_view_{viewpoint.image_name}/ground_truth", gt_image[None], global_step=iteration)
 
                     psnr_test += psnr(image, gt_image).mean().double()
-                psnr_test /= len(config['cameras'])      
+                psnr_test /= len(config['cameras'])
                 print("\n [ITER {}] Evaluating {}: PSNR {}".format(iteration, config['name'], psnr_test))
                 if tb_writer:
                     tb_writer.add_scalar(config['name'] + '/loss_viewpoint - psnr', psnr_test, iteration)
 
         torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+        eval_elapsed_time = timeloger.perf_counter() - eval_start_time
+
+    return eval_elapsed_time
 
 if __name__ == "__main__":
     # Set up command line argument parser
@@ -222,6 +280,7 @@ if __name__ == "__main__":
     parser.add_argument("--test_iterations", nargs="+", type=int, default=[30_000])
     parser.add_argument("--save_iterations", nargs="+", type=int, default=[30_000])
     parser.add_argument("--quiet", action="store_true")
+    parser.add_argument("--skip_vqr", action="store_true", help="skip post-training average VQR")
     parser.add_argument("--field_conf", type=str, default="./arguments/nerf.conf", help='field config file')
     parser.add_argument("--TP", type=int, default=1, help="whether to use temporal perturbation rendering loss")
     parser.add_argument("--randomprune", type=int, default=0, help="whether to use random pruning")
@@ -256,9 +315,19 @@ if __name__ == "__main__":
 
     # Run training
     torch.autograd.set_detect_anomaly(args.detect_anomaly)
-    
+
     resampled_ret = None
     tbw = prepare_output_and_logger(lp)
 
     print("Training")
-    training(tbw, lp, field_conf, op, pp.extract(args), args.test_iterations, args.save_iterations, args.debug_from)
+    training(
+        tbw,
+        lp,
+        field_conf,
+        op,
+        pp.extract(args),
+        args.test_iterations,
+        args.save_iterations,
+        args.debug_from,
+        args.skip_vqr,
+    )

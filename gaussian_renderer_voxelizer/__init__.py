@@ -11,15 +11,17 @@
 
 import torch
 import math
-from diff_Xray_gaussian_rasterization_voxelization import (
-    GaussianRasterizationSettings as SortFreeRasterizationSettings,
-    GaussianRasterizer as SortFreeRasterizer,
-    GaussianVoxelizationSettings,
-    GaussianVoxelizer,
+from diff_Xray_gaussian_rasterization_voxelization_fast import (
+    GaussianRasterizationSettings as FastRasterizationSettings,
+    GaussianRasterizer as FastRasterizer,
+    GaussianVoxelizationSettings as FastVoxelizationSettings,
+    GaussianVoxelizer as FastVoxelizer,
 )
 from diff_Xray_gaussian_rasterization_voxelization_legacy import (
     GaussianRasterizationSettings as LegacyRasterizationSettings,
     GaussianRasterizer as LegacyRasterizer,
+    GaussianVoxelizationSettings as LegacyVoxelizationSettings,
+    GaussianVoxelizer as LegacyVoxelizer,
 )
 from scene.gaussian_model import GaussianModel
 from scene.cameras import Camera
@@ -28,20 +30,20 @@ import copy
 
 
 def _rasterizer_classes(pipe):
-    backend = getattr(pipe, "rasterizer_backend", "sort_free")
-    if backend == "sort_free":
-        return SortFreeRasterizationSettings, SortFreeRasterizer
+    backend = getattr(pipe, "rasterizer_backend", "legacy")
+    if backend == "fast":
+        return FastRasterizationSettings, FastRasterizer
     if backend == "legacy":
         return LegacyRasterizationSettings, LegacyRasterizer
     raise ValueError(f"Unknown rasterizer backend: {backend}")
 
-def query(pc: GaussianModel, 
+def query(pc: GaussianModel,
           timestamp,
-          recon_args, 
+          recon_args,
           nVoxel,
           sVoxel,
           center,
-          pipe, 
+          pipe,
           scaling_modifier=1.0,
           opacity_precomp=None,
           opacity_type='final_opacity'
@@ -50,7 +52,16 @@ def query(pc: GaussianModel,
     Query a volume with voxelization.
     """
 
-    
+
+    backend = getattr(pipe, "voxelizer_backend", "auto")
+    if backend == "auto":
+        backend = getattr(pipe, "rasterizer_backend", "legacy")
+    if backend == "legacy":
+        GaussianVoxelizationSettings, GaussianVoxelizer = LegacyVoxelizationSettings, LegacyVoxelizer
+    elif backend == "fast":
+        GaussianVoxelizationSettings, GaussianVoxelizer = FastVoxelizationSettings, FastVoxelizer
+    else:
+        raise ValueError(f"Unknown voxelizer backend: {backend}")
     voxel_settings = GaussianVoxelizationSettings(
         scale_modifier=scaling_modifier,
         nVoxel_x=int(nVoxel[0]),
@@ -92,7 +103,7 @@ def query(pc: GaussianModel,
         rotations=rotations,
         cov3D_precomp=cov3D_precomp,
     )
-                
+
     return {
         "vol": vol_pred,
         "radii": radii,

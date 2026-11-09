@@ -26,6 +26,10 @@ setup(
                 "cuda_rasterizer/forward.cu",
                 "cuda_rasterizer/backward.cu",
                 "rasterize_points.cu",
+                "cuda_voxelizer/voxelizer_impl.cu",
+                "cuda_voxelizer/forward.cu",
+                "cuda_voxelizer/backward.cu",
+                "voxelize_points.cu",
                 "ext.cpp",
             ],
             extra_compile_args={
@@ -33,7 +37,7 @@ setup(
                     "-I"
                     + os.path.join(
                         os.path.dirname(os.path.abspath(__file__)),
-                        "../diff-Xray-gaussian-rasterization-voxelization-sortfree/third_party/glm/",
+                        "../diff-Xray-gaussian-rasterization-voxelization-fast/third_party/glm/",
                     )
                 ]
             },
